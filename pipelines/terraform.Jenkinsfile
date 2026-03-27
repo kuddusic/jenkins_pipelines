@@ -8,7 +8,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'TF_REPO_URL', defaultValue: 'https://github.com/example-org/example-terraform.git', description: 'Git repository URL containing Terraform code')
+        string(name: 'TF_REPO_URL', defaultValue: 'https://github.com/kuddusic/tf-vsphere.git', description: 'Git repository URL containing Terraform code')
         string(name: 'TF_REPO_BRANCH', defaultValue: 'main', description: 'Git branch to build')
         string(name: 'TF_ROOT_DIR', defaultValue: '.', description: 'Directory containing Terraform code inside the repository')
         choice(name: 'TF_ACTION', choices: ['plan', 'apply', 'destroy'], description: 'Terraform action to execute')
@@ -23,7 +23,7 @@ pipeline {
     stages {
         stage('Checkout Terraform Repo') {
             steps {
-                git branch: params.TF_REPO_BRANCH, url: params.TF_REPO_URL
+                git branch: params.TF_REPO_BRANCH, credentialsId: 'github-credentials', url: params.TF_REPO_URL
             }
         }
 
