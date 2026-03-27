@@ -2,7 +2,7 @@ String repoUrl = 'https://github.com/kuddusic/jenkins_pipelines.git'
 String repoBranch = '*/main'
 String scmCredentialsId = ''
 
-def createPipelineJob = { String jobName, String scriptPath, String descriptionText ->
+def createPipelineJob = { String jobName, String pipelineFile, String descriptionText ->
     pipelineJob(jobName) {
         description(descriptionText)
 
@@ -23,7 +23,7 @@ def createPipelineJob = { String jobName, String scriptPath, String descriptionT
                         branch(repoBranch)
                     }
                 }
-                scriptPath(scriptPath)
+                scriptPath(pipelineFile)
             }
         }
 
