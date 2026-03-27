@@ -44,3 +44,9 @@ createPipelineJob(
     'pipelines/test-app.Jenkinsfile',
     'Test application pipeline job generated from Job DSL seed.'
 )
+
+createPipelineJob(
+    'terraform-pipeline',
+    'pipelines/terraform.Jenkinsfile',
+    'Terraform pipeline job generated from Job DSL seed.'
+)
