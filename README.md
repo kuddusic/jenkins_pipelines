@@ -28,3 +28,14 @@ Running the seed script creates two pipeline jobs:
 The generated jobs read their pipeline definitions from the `pipelines/` folder in this repository.
 
 Update the repository URL, branch, credentials ID, and job names in `jobs/seed.groovy` to match your Jenkins environment.
+
+## Terraform Pipeline Notes
+
+The Terraform pipeline exports these variables for Terraform runs:
+
+- `TF_VAR_vault_address`
+- `TF_VAR_vault_user`
+- `TF_VAR_vault_password`
+- `TF_VAR_vault_auth_path`
+
+`TF_VAR_vault_auth_path` is loaded from a Jenkins `Secret text` credential using the `VAULT_AUTH_PATH_CREDENTIALS_ID` pipeline parameter.

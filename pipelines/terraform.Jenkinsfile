@@ -12,6 +12,9 @@ pipeline {
         string(name: 'TF_REPO_BRANCH', defaultValue: 'main', description: 'Git branch to build')
         string(name: 'TF_ROOT_DIR', defaultValue: '.', description: 'Directory containing Terraform code inside the repository')
         choice(name: 'TF_ACTION', choices: ['plan', 'apply', 'destroy'], description: 'Terraform action to execute')
+        string(name: 'TF_VAR_vault_address', defaultValue: 'https://vault.local.kuddusi.cc:8200', description: 'Vault server address for Terraform')
+        string(name: 'TF_VAR_vault_user', defaultValue: 'terraform-vsphere', description: 'Vault username for Terraform')
+        string(name: 'TF_VAR_vault_password_ID', defaultValue: 'vault-password', description: 'Jenkins secret Vault password for Terraform')
         booleanParam(name: 'AUTO_APPROVE', defaultValue: false, description: 'Pass -auto-approve for apply and destroy')
     }
 
@@ -35,8 +38,16 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                dir("${params.TF_ROOT_DIR}") {
-                    sh 'terraform init'
+                withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
+                    dir("${params.TF_ROOT_DIR}") {
+                        withEnv([
+                            "TF_VAR_vault_address=${params.TF_VAR_vault_address}",
+                            "TF_VAR_vault_user=${params.TF_VAR_vault_user}",
+                            "TF_VAR_vault_password=$TF_VAR_vault_password"
+                        ]) {
+                            sh 'terraform init'
+                        }
+                    }
                 }
             }
         }
@@ -54,8 +65,16 @@ pipeline {
 
         stage('Terraform Validate') {
             steps {
-                dir("${params.TF_ROOT_DIR}") {
-                    sh 'terraform validate'
+                withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
+                    dir("${params.TF_ROOT_DIR}") {
+                        withEnv([
+                            "TF_VAR_vault_address=${params.TF_VAR_vault_address}",
+                            "TF_VAR_vault_user=${params.TF_VAR_vault_user}",
+                            "TF_VAR_vault_password=$TF_VAR_vault_password"
+                        ]) {
+                            sh 'terraform validate'
+                        }
+                    }
                 }
             }
         }
@@ -65,8 +84,16 @@ pipeline {
                 expression { params.TF_ACTION == 'plan' || params.TF_ACTION == 'apply' }
             }
             steps {
-                dir("${params.TF_ROOT_DIR}") {
-                    sh 'terraform plan -out=tfplan'
+                withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
+                    dir("${params.TF_ROOT_DIR}") {
+                        withEnv([
+                            "TF_VAR_vault_address=${params.TF_VAR_vault_address}",
+                            "TF_VAR_vault_user=${params.TF_VAR_vault_user}",
+                            "TF_VAR_vault_password=$TF_VAR_vault_password"
+                        ]) {
+                            sh 'terraform plan -out=tfplan'
+                        }
+                    }
                 }
             }
         }
@@ -76,14 +103,22 @@ pipeline {
                 expression { params.TF_ACTION == 'apply' }
             }
             steps {
-                dir("${params.TF_ROOT_DIR}") {
-                    sh '''
-                        if [ "${AUTO_APPROVE}" = "true" ]; then
-                          terraform apply -auto-approve tfplan
-                        else
-                          terraform apply tfplan
-                        fi
-                    '''
+                withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {                
+                    dir("${params.TF_ROOT_DIR}") {
+                        withEnv([
+                            "TF_VAR_vault_address=${params.TF_VAR_vault_address}",
+                            "TF_VAR_vault_user=${params.TF_VAR_vault_user}",
+                            "TF_VAR_vault_password=$TF_VAR_vault_password"
+                        ]) {
+                            sh '''
+                                if [ "${AUTO_APPROVE}" = "true" ]; then
+                                  terraform apply -auto-approve tfplan
+                                else
+                                  terraform apply tfplan
+                                fi
+                            '''
+                        }
+                    }
                 }
             }
         }
@@ -93,14 +128,22 @@ pipeline {
                 expression { params.TF_ACTION == 'destroy' }
             }
             steps {
-                dir("${params.TF_ROOT_DIR}") {
-                    sh '''
-                        if [ "${AUTO_APPROVE}" = "true" ]; then
-                          terraform destroy -auto-approve
-                        else
-                          terraform destroy
-                        fi
-                    '''
+                withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
+                    dir("${params.TF_ROOT_DIR}") {
+                        withEnv([
+                            "TF_VAR_vault_address=${params.TF_VAR_vault_address}",
+                            "TF_VAR_vault_user=${params.TF_VAR_vault_user}",
+                            "TF_VAR_vault_password=$TF_VAR_vault_password"
+                        ]) {
+                            sh '''
+                                if [ "${AUTO_APPROVE}" = "true" ]; then
+                                  terraform destroy -auto-approve
+                                else
+                                  terraform destroy
+                                fi
+                            '''
+                        }
+                    }
                 }
             }
         }
