@@ -6,6 +6,7 @@ This repository stores Jenkins pipelines and Job DSL seed definitions for a pipe
 
 - `pipelines/sample-app.Jenkinsfile`: sample declarative pipeline
 - `pipelines/test-app.Jenkinsfile`: second sample pipeline for test jobs
+- `pipelines/terraform.Jenkinsfile`: Terraform pipeline for code stored in Git
 - `jobs/seed.groovy`: sample Job DSL seed that creates pipeline jobs
 
 ## Jenkins Setup
@@ -22,6 +23,7 @@ Running the seed script creates two pipeline jobs:
 
 - `sample-app-pipeline`
 - `test-app-pipeline`
+- `terraform-pipeline`
 
 The generated jobs read their pipeline definitions from the `pipelines/` folder in this repository.
 
