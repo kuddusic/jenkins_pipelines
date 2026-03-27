@@ -8,7 +8,6 @@ pipeline {
     }
 
     parameters {
-<<<<<<< HEAD
         string(name: 'TF_REPO_URL', defaultValue: 'https://github.com/kuddusic/tf-vsphere.git', description: 'Git repository URL containing Terraform code')
         string(name: 'TF_REPO_BRANCH', defaultValue: 'main', description: 'Git branch to build')
         string(name: 'TF_ROOT_DIR', defaultValue: '.', description: 'Directory containing Terraform code inside the repository')
@@ -16,12 +15,6 @@ pipeline {
         string(name: 'TF_VAR_vault_address', defaultValue: 'https://vault.local.kuddusi.cc:8200', description: 'Vault server address for Terraform')
         string(name: 'TF_VAR_vault_user', defaultValue: 'terraform-vsphere', description: 'Vault username for Terraform')
         string(name: 'TF_VAR_vault_password_ID', defaultValue: 'vault-password', description: 'Jenkins secret Vault password for Terraform')
-=======
-        string(name: 'TF_REPO_URL', defaultValue: 'https://github.com/example-org/example-terraform.git', description: 'Git repository URL containing Terraform code')
-        string(name: 'TF_REPO_BRANCH', defaultValue: 'main', description: 'Git branch to build')
-        string(name: 'TF_ROOT_DIR', defaultValue: '.', description: 'Directory containing Terraform code inside the repository')
-        choice(name: 'TF_ACTION', choices: ['plan', 'apply', 'destroy'], description: 'Terraform action to execute')
->>>>>>> 76363975d71368d0ebedce54459d0460717ae537
         booleanParam(name: 'AUTO_APPROVE', defaultValue: false, description: 'Pass -auto-approve for apply and destroy')
     }
 
@@ -33,11 +26,7 @@ pipeline {
     stages {
         stage('Checkout Terraform Repo') {
             steps {
-<<<<<<< HEAD
                 git branch: params.TF_REPO_BRANCH, credentialsId: 'github-credentials', url: params.TF_REPO_URL
-=======
-                git branch: params.TF_REPO_BRANCH, url: params.TF_REPO_URL
->>>>>>> 76363975d71368d0ebedce54459d0460717ae537
             }
         }
 
@@ -49,7 +38,6 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-<<<<<<< HEAD
                 withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
                     dir("${params.TF_ROOT_DIR}") {
                         withEnv([
@@ -60,10 +48,6 @@ pipeline {
                             sh 'terraform init'
                         }
                     }
-=======
-                dir("${params.TF_ROOT_DIR}") {
-                    sh 'terraform init'
->>>>>>> 76363975d71368d0ebedce54459d0460717ae537
                 }
             }
         }
@@ -81,7 +65,6 @@ pipeline {
 
         stage('Terraform Validate') {
             steps {
-<<<<<<< HEAD
                 withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
                     dir("${params.TF_ROOT_DIR}") {
                         withEnv([
@@ -92,10 +75,6 @@ pipeline {
                             sh 'terraform validate'
                         }
                     }
-=======
-                dir("${params.TF_ROOT_DIR}") {
-                    sh 'terraform validate'
->>>>>>> 76363975d71368d0ebedce54459d0460717ae537
                 }
             }
         }
@@ -105,7 +84,6 @@ pipeline {
                 expression { params.TF_ACTION == 'plan' || params.TF_ACTION == 'apply' }
             }
             steps {
-<<<<<<< HEAD
                 withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
                     dir("${params.TF_ROOT_DIR}") {
                         withEnv([
@@ -116,10 +94,6 @@ pipeline {
                             sh 'terraform plan -out=tfplan'
                         }
                     }
-=======
-                dir("${params.TF_ROOT_DIR}") {
-                    sh 'terraform plan -out=tfplan'
->>>>>>> 76363975d71368d0ebedce54459d0460717ae537
                 }
             }
         }
@@ -129,7 +103,6 @@ pipeline {
                 expression { params.TF_ACTION == 'apply' }
             }
             steps {
-<<<<<<< HEAD
                 withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {                
                     dir("${params.TF_ROOT_DIR}") {
                         withEnv([
@@ -146,16 +119,6 @@ pipeline {
                             '''
                         }
                     }
-=======
-                dir("${params.TF_ROOT_DIR}") {
-                    sh '''
-                        if [ "${AUTO_APPROVE}" = "true" ]; then
-                          terraform apply -auto-approve tfplan
-                        else
-                          terraform apply tfplan
-                        fi
-                    '''
->>>>>>> 76363975d71368d0ebedce54459d0460717ae537
                 }
             }
         }
@@ -165,7 +128,6 @@ pipeline {
                 expression { params.TF_ACTION == 'destroy' }
             }
             steps {
-<<<<<<< HEAD
                 withCredentials([string(credentialsId: params.TF_VAR_vault_password_ID, variable: 'TF_VAR_vault_password')]) {
                     dir("${params.TF_ROOT_DIR}") {
                         withEnv([
@@ -182,16 +144,6 @@ pipeline {
                             '''
                         }
                     }
-=======
-                dir("${params.TF_ROOT_DIR}") {
-                    sh '''
-                        if [ "${AUTO_APPROVE}" = "true" ]; then
-                          terraform destroy -auto-approve
-                        else
-                          terraform destroy
-                        fi
-                    '''
->>>>>>> 76363975d71368d0ebedce54459d0460717ae537
                 }
             }
         }
